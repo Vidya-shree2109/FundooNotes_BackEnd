@@ -1,5 +1,4 @@
 ﻿using BusinessLayer.Interfaces;
-using CommonLayer.Model;
 using RepoLayer.Entities;
 using RepoLayer.Interfaces;
 using System;
@@ -8,18 +7,40 @@ using System.Text;
 
 namespace BusinessLayer.Services
 {
-    public class UserBL : IUserBL
+    public class LabelBL : ILabelBL
     {
-        IUserRL userRL;
-        public UserBL(IUserRL userRL)
+        ILabelRL labelRl;
+        public LabelBL(ILabelRL labelRl)
         {
-            this.userRL= userRL;
+            this.labelRl = labelRl;
         }
-        public UserEntity Registration(UserRegistration user)
+        public LabelEntity Addlabel(long noteid, long userid, string labels)
         {
             try
             {
-                return userRL.Registration(user);
+                return this.labelRl.Addlabel(noteid, userid, labels);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public IEnumerable<LabelEntity> GetlabelsByNoteid(long noteid, long userid)
+        {
+            try
+            {
+                return this.labelRl.GetlabelsByNoteid(noteid, userid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public bool RemoveLabel(long userID, string labelName)
+        {
+            try
+            {
+                return this.labelRl.RemoveLabel(userID, labelName);
             }
             catch (Exception)
             {
@@ -27,38 +48,17 @@ namespace BusinessLayer.Services
                 throw;
             }
         }
-        public string Login(UserLogin userLogin)
+        public IEnumerable<LabelEntity> RenameLabel(long userID, string oldLabelName, string labelName)
         {
             try
             {
-                return this.userRL.Login(userLogin);
+                return this.labelRl.RenameLabel(userID, oldLabelName, labelName);
             }
             catch (Exception)
             {
                 throw;
             }
-        }
-        public string ForgotPassword(string email)
-        {
-            try
-            {
-                return userRL.ForgotPassword(email);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        public bool ResetPassword(string email, string password, string confirmPassword)
-        {
-            try
-            {
-                return userRL.ResetPassword(email, password, confirmPassword);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+
         }
     }
 }

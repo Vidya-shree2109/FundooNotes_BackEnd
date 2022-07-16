@@ -30,7 +30,7 @@ namespace RepoLayer.Services
                 userEntity.Email = user.Email;
                 userEntity.FirstName = user.FirstName;
                 userEntity.LastName = user.LastName;
-                userEntity.Password = user.Password;
+                userEntity.Password = PswdEncryptionDecryption.EncryptPassword(user.Password);
                 fundooContext.Users.Add(userEntity);
                 int result=fundooContext.SaveChanges();
                 if(result > 0)
@@ -88,6 +88,49 @@ namespace RepoLayer.Services
                     return null;
                 }
 
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public string ForgotPassword(string email)
+        {
+            try
+            {
+                var emailCheck = fundooContext.Users.FirstOrDefault(x => x.Email == email);
+                if (emailCheck != null)
+                {
+                    var token = JwtMethod(emailCheck.Email, emailCheck.UserId);
+                    new MsmqModel().MsmqSend(token);
+                    return token;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public bool ResetPassword(string email, string password, string confirmPassword)
+        {
+            try
+            {
+                if(password.Equals(confirmPassword))
+                {
+                    UserEntity user = fundooContext.Users.Where(e => e.Email == email).FirstOrDefault();
+                    user.Password = confirmPassword;
+                    fundooContext.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception)
             {
