@@ -21,13 +21,23 @@ namespace FundooNotes.Controllers
     [ApiController]
     public class NoteController : ControllerBase
     {
-        private readonly IMemoryCache memoryCache;
-        FundooContext fundooContext;
-        private readonly IDistributedCache distributedCache;
+        //private readonly IMemoryCache memoryCache;
+        //FundooContext fundooContext;
+        //private readonly IDistributedCache distributedCache;
         INoteBL inoteBl;
-        public NoteController(INoteBL inoteBl)
+        //public NoteController(INoteBL inoteBl)
+        //{
+        //    this.inoteBl = inoteBl;
+        //}
+        private readonly IMemoryCache memoryCache;
+        private readonly IDistributedCache distributedCache;
+        private readonly FundooContext context;
+        public NoteController(INoteBL inoteBl, IMemoryCache memoryCache, FundooContext context, IDistributedCache distributedCache)
         {
             this.inoteBl = inoteBl;
+            this.memoryCache = memoryCache;
+            this.context = context;
+            this.distributedCache = distributedCache;
         }
         [Authorize]
         [HttpPost("Add")]
@@ -190,7 +200,7 @@ namespace FundooNotes.Controllers
             }
         }
         [Authorize]
-        [HttpGet("ByUser")]
+        [HttpGet("UserID")]
         public IEnumerable<NoteEntity> GetAllNotesbyuser(long userid)
         {
             try
@@ -223,6 +233,35 @@ namespace FundooNotes.Controllers
                 throw;
             }
         }
+
+        [Authorize]
+        [HttpPut("Color")]
+        public IActionResult Color(long noteid, string color)
+        {
+            try
+            {
+                var result = inoteBl.Color(noteid, color);
+                if (result != null)
+                {
+                    return this.Ok(new
+                    {
+                        message = "Color is changed ",
+                        Response = result
+                    });
+                }
+                else
+                {
+                    return this.BadRequest(new
+                    {
+                        message = "Unable to change color"
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         [HttpGet("RedisCache")]
         public async Task<IActionResult> GetAllNotesByRedisCache()
         {
@@ -237,7 +276,7 @@ namespace FundooNotes.Controllers
             }
             else
             {
-                noteList = await fundooContext.Notes.ToListAsync();
+                noteList = await context.Notes.ToListAsync();
                 serializednoteList = JsonConvert.SerializeObject(noteList);
                 redisnoteList = Encoding.UTF8.GetBytes(serializednoteList);
                 var options = new DistributedCacheEntryOptions()

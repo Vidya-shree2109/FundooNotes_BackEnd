@@ -18,10 +18,10 @@ namespace RepoLayer.Services
         FundooContext fundooContext;
         private readonly IConfiguration config;
         public UserRL(FundooContext fundooContext, IConfiguration config)
-        {
+        {   
             this.fundooContext = fundooContext;
             this.config = config;
-        }
+        }   
         public UserEntity Registration(UserRegistration user)
         {
             try
@@ -30,9 +30,9 @@ namespace RepoLayer.Services
                 userEntity.Email = user.Email;
                 userEntity.FirstName = user.FirstName;
                 userEntity.LastName = user.LastName;
-                userEntity.Password = PswdEncryptionDecryption.EncryptPassword(user.Password);
-                fundooContext.Users.Add(userEntity);
-                int result=fundooContext.SaveChanges();
+                userEntity.Password = EncryptPassword(user.Password);
+                this.fundooContext.Users.Add(userEntity);
+                int result=this.fundooContext.SaveChanges();
                 if(result > 0)
                 {
                     return userEntity;
@@ -72,13 +72,33 @@ namespace RepoLayer.Services
             // 5. Return Token from method
             return tokenHandler.WriteToken(token);
         }
+        public string EncryptPassword(string password)
+        {
+            string strmsg = string.Empty;
+            byte[] encode = new byte[password.Length];
+            encode = Encoding.UTF8.GetBytes(password);
+            strmsg = Convert.ToBase64String(encode);
+            return strmsg;
+        }
+
+        public string DecryptPassword(string encryptpwd)
+        {
+            string decryptpwd = string.Empty;
+            UTF8Encoding encodepwd = new UTF8Encoding();
+            Decoder Decode = encodepwd.GetDecoder();
+            byte[] todecode_byte = Convert.FromBase64String(encryptpwd);
+            int charCount = Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
+            char[] decoded_char = new char[charCount];
+            Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
+            decryptpwd = new String(decoded_char);
+            return decryptpwd;
+        }
         public string Login(UserLogin userLogin)
         {
             try
             {
-                var login = fundooContext.Users.SingleOrDefault(x => x.Email == userLogin.Email && x.Password == userLogin.Password);
-
-                if (login != null)
+                var login = fundooContext.Users.Where(x => x.Email == userLogin.Email).FirstOrDefault();
+                if (login != null && DecryptPassword(login.Password) == userLogin.Password)
                 {
                     var token = JwtMethod(login.Email, login.UserId);
                     return token;

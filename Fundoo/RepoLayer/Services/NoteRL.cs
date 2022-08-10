@@ -181,5 +181,24 @@ namespace RepoLayer.Services
                 throw;
             }
         }
+        public NoteEntity Color(long noteid, string color)
+        {
+            try
+            {
+                NoteEntity note = this.fundooContext.Notes.FirstOrDefault(x => x.NoteId == noteid);
+                if (note.Color != null)
+                {
+                    note.Color = color;
+                    this.fundooContext.SaveChanges();
+                    return note;
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

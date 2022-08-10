@@ -77,6 +77,7 @@ namespace FundooNotes.Controllers
         }
 
         [HttpPost("Forget")]
+        //[Route("api/Forget/{email}")]
         public IActionResult Forget(string email)
         {
             try

@@ -10,8 +10,8 @@ using RepoLayer.Context;
 namespace RepoLayer.Migrations
 {
     [DbContext(typeof(FundooContext))]
-    [Migration("20220714080013_LabelNewTable")]
-    partial class LabelNewTable
+    [Migration("20220809185353_NotesTable")]
+    partial class NotesTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

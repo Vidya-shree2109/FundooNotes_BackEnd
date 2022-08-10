@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace RepoLayer.Entities
 {
@@ -16,7 +17,11 @@ namespace RepoLayer.Entities
         public long UserId { get; set; }
         [ForeignKey("Notes")]
         public long NoteId { get; set; }
+
+        [JsonIgnore]
         public virtual UserEntity user { get; set; }
+
+        [JsonIgnore]
         public virtual NoteEntity notes { get; set; }
     }
 }

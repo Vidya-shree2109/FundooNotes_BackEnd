@@ -10,8 +10,8 @@ using RepoLayer.Context;
 namespace RepoLayer.Migrations
 {
     [DbContext(typeof(FundooContext))]
-    [Migration("20220711134137_NotesNewTable")]
-    partial class NotesNewTable
+    [Migration("20220809185414_CollabTable")]
+    partial class CollabTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,62 @@ namespace RepoLayer.Migrations
                 .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("RepoLayer.Entities.CollabEntity", b =>
+                {
+                    b.Property<long>("CollabId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CollabEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("NoteId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("notesNoteId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CollabId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("notesNoteId");
+
+                    b.ToTable("Collaborator");
+                });
+
+            modelBuilder.Entity("RepoLayer.Entities.LabelEntity", b =>
+                {
+                    b.Property<long>("LabelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("LabelName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("NoteId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("notesNoteId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("LabelId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("notesNoteId");
+
+                    b.ToTable("Labels");
+                });
 
             modelBuilder.Entity("RepoLayer.Entities.NoteEntity", b =>
                 {
@@ -90,6 +146,32 @@ namespace RepoLayer.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RepoLayer.Entities.CollabEntity", b =>
+                {
+                    b.HasOne("RepoLayer.Entities.UserEntity", "user")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepoLayer.Entities.NoteEntity", "notes")
+                        .WithMany()
+                        .HasForeignKey("notesNoteId");
+                });
+
+            modelBuilder.Entity("RepoLayer.Entities.LabelEntity", b =>
+                {
+                    b.HasOne("RepoLayer.Entities.UserEntity", "user")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepoLayer.Entities.NoteEntity", "notes")
+                        .WithMany()
+                        .HasForeignKey("notesNoteId");
                 });
 
             modelBuilder.Entity("RepoLayer.Entities.NoteEntity", b =>

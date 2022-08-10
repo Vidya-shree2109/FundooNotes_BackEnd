@@ -37,7 +37,6 @@ namespace RepoLayer.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

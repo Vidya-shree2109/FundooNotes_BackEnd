@@ -6,7 +6,7 @@ namespace RepoLayer.Services
 {
     public class PswdEncryptionDecryption
     {
-        public static string EncryptPassword(string password)
+        public string EncryptPassword(string password)
         {
             string strmsg = string.Empty;
             byte[] encode = new byte[password.Length];
@@ -15,7 +15,7 @@ namespace RepoLayer.Services
             return strmsg;
         }
 
-        public static string DecryptPassword(string encryptpwd)
+        public string DecryptPassword(string encryptpwd)
         {
             string decryptpwd = string.Empty;
             UTF8Encoding encodepwd = new UTF8Encoding();
