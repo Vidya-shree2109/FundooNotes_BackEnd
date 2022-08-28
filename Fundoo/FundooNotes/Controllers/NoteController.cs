@@ -158,7 +158,7 @@ namespace FundooNotes.Controllers
             }
         }
         [Authorize]
-        [HttpPut("Archive")]
+        [HttpPut("Archive/{noteid}")]
         public IActionResult IsArchivedORNot(long noteid)
         {
             try
@@ -168,7 +168,7 @@ namespace FundooNotes.Controllers
                 {
                     return this.Ok(new
                     {
-                        message = "Note Unarchived",
+                        message = "Note archived successfully",
                         Response = result
                     });
                 }
@@ -176,7 +176,7 @@ namespace FundooNotes.Controllers
                 {
                     return this.BadRequest(new
                     {
-                        message = "Note Archived Successfully"
+                        message = "Note Unarchived"
                     });
                 }
             }

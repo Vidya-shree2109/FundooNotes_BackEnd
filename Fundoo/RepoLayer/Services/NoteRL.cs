@@ -128,15 +128,20 @@ namespace RepoLayer.Services
             try
             {
                 NoteEntity result = this.fundooContext.Notes.FirstOrDefault(x => x.NoteId == noteid);
-                if (result.IsArchived == true)
+                if (result != null)
                 {
-                    result.IsArchived = false;
-                    this.fundooContext.SaveChanges();
-                    return result;
+                    bool check = result.IsArchived;
+                    if (check == true)
+                    {
+                        result.IsArchived = false;
+                    }
+                    if (check == false)
+                    {
+                        result.IsArchived = true;
+                    }
+                    fundooContext.SaveChanges();
                 }
-                result.IsArchived = true;
-                this.fundooContext.SaveChanges();
-                return null;
+                return result;
             }
             catch (Exception)
             {
